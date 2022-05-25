@@ -72,14 +72,15 @@ function validate_day() {
 function get_nodes() {
 
   old_ifs=$IFS
-
+  IFS=$'\n'
   for node in $( rocks run host "ls -1d ${OUTPUT_DIR}/${collect_day}* 2> /dev/null | wc -l" collate=true ); do
 
-    node_name="$( echo "${node}" | awk -F ': ' '{print $1}') "
-    num_directories="$( echo "${node}" | awk -F ': ' '{print $2}') "
+    node_name="$( echo "${node}" | awk -F ': ' '{print $1}' | xargs )"
+    num_directories="$( echo "${node}" | awk -F ': ' '{print $2}' | xargs )"
 
     if [[ "${num_directories}" == "down" ]]; then
-      WARNING "Node ${node_name} is down!"
+      ERROR "Node ${node_name} is down!"
+      continue
     fi
 
     if (( num_directories == 0 )); then
@@ -153,7 +154,7 @@ function main() {
 
   declare -a available_nodes
 
-
+  get_nodes
 
 }
 
