@@ -117,7 +117,7 @@ function check_candidates_node() {
   INFO "Number of known sources + archives:"
   if (( full_cand_diff != 0 )); then
 
-    if (( $( echo "${full_cand_processed} >= ${spccl_candidates} * ${ERROR_THRESHOLD}" | bc ) )); then
+    if (( $( echo "${full_cand_diff} >= ${spccl_candidates} * ${ERROR_THRESHOLD}" | bc ) )); then
       ERROR "More than $( echo "${ERROR_THRESHOLD} * 100" | bc )% of candidates processed incorrectly!"
       ERROR "Got ${full_cand_processed} instead of expected ${spccl_candidates}"
       read -rp "$( echo -e "\033[1;31mWould you like to get the details of that day? [y/n/q]\033[0m " )" decision
