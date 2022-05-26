@@ -23,7 +23,7 @@ function get_candidates_node() {
 
   ssh "${process_node}" \
     "
-      cd ${parent_dir}/collected_hdf5/${date_dir}/
+      cd ${parent_dir}/collected_hdf5/${date_dir}/ \
         && rsync --ignore-existing *.hdf5 tuse:${storage_dir}/${date_dir}
     "
 
