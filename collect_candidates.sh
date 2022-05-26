@@ -1,6 +1,36 @@
 #!/bin/bash
 
 source ./logging.sh
+source ./constants.sh
+
+source ./check_candidates_node.sh
+
+function validate_directories() {
+
+  if [[ ! -d  "${STORAGE_DIR}" ]]; then
+    ERROR "Storage directory ${STORAGE_DIR} does not exist!"
+    exit 1
+  fi
+
+}
+
+########
+# Checks the candidates on all the nodes
+#
+# Globals:
+#   available_nodes
+#   collect_day
+#
+# Arguments:
+#   None
+########
+function check_candidates() {
+
+  for node in "${available_nodes[@]}"; do
+    check_candidates_node "${node}" "${OUTPUT_DIR}" "${collect_day}"
+  done
+
+}
 
 ########
 # Validate the provided date
@@ -150,11 +180,19 @@ function main() {
     exit 1
   fi
 
+  INFO "Will process with the following default configuration:"
+  echo "Output data directory: ${OUTPUT_DIR}"
+  echo "Storage data directory: ${STORAGE_DIR}"
+
+  validate_directories
+
   validate_day
 
   declare -a available_nodes
 
   get_nodes
+
+  check_candidates
 
 }
 
