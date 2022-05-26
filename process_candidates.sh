@@ -47,8 +47,11 @@ function check_candidates() {
 function collect_candidates() {
 
   for node in "${available_nodes[@]}"; do
+    echo -ne "Collecting node ${node}\r"
     collect_candidates_node "${node}" "${OUTPUT_DIR}" "${collect_day}"
   done
+
+  INFO "Collecting done"
 
 }
 
@@ -111,6 +114,8 @@ function check_disk_usage() {
         exit 1
         ;;
     esac
+  else
+    INFO "Will download ${nodes_used_space_mb}MiB of data"
   fi
 
 }

@@ -32,8 +32,8 @@ function collect_candidates_node() {
     "
 
       cd ${parent_dir} \
-        && mkdir collected_hdf5/${date_dir} -p \
-        && mv ${date_dir}*/beam*/*.hdf5 collected_hdf5/${date_dir} \
+        && mkdir ./collected_hdf5/${date_dir} -p \
+        && mv ./${date_dir}*/beam*/*.hdf5 collected_hdf5/${date_dir} 2> /dev/null \
         && find collected_hdf5/${date_dir} -name '*.hdf5' 2> /dev/null | wc -l
 
     "
