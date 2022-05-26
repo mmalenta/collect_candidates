@@ -5,6 +5,7 @@ source ./constants.sh
 
 source ./check_candidates_node.sh
 source ./collect_candidates_node.sh
+source ./get_candidates_node.sh
 
 function validate_directories() {
 
@@ -117,6 +118,26 @@ function check_disk_usage() {
   else
     INFO "Will download ${nodes_used_space_mb}MiB of data"
   fi
+
+}
+
+########
+# Downloads the candidates from all the nodes onto the head node
+#
+# Globals:
+#   available_nodes
+#   collect_day
+#
+# Arguments:
+#   None
+########
+function get_candidates() {
+
+  for node in "${available_nodes[@]}"; do
+
+    get_candidates_node "${node}" "${OUTPUT_DIR}" "${STORAGE_DIR}" "${collect_day}"
+
+  done
 
 }
 
