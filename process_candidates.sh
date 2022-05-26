@@ -53,6 +53,69 @@ function collect_candidates() {
 }
 
 ########
+# Check the disk usage by the data in the staging areas
+#
+# Globals:
+#   collect_day
+#
+# Arguments:
+#   None
+#
+# Output:
+#   Report on the required disk space. Warn if the used disk space would
+#   take us under the specified threshold and ask what to do. 
+#   Error if there is not enough disk space at all.
+########
+function check_disk_usage() {
+
+  local -i nodes_used_space_mb
+  nodes_used_space_mb=0
+
+  for node in "${available_nodes[@]}"; do
+
+    node_mb="$( ssh "${node}" \
+      "
+      
+        cd ${OUTPUT_DIR}/collected_hdf5/ \
+        && du -BM ${collect_day} | sed 's/^\([0-9]*\)M.*/\1/g'
+      
+      "
+    )"
+
+    nodes_used_space_mb=$(( nodes_used_space_mb + node_mb ))
+
+  done
+
+  available_space_mb="$( echo "$(df "${STORAGE_DIR}" --output=avail | tail -n 1) / 1024 " | bc )"
+
+  if (( nodes_used_space_mb >= available_space_mb )); then
+    ERROR "Not enough space available on ${STORAGE_DIR} to download the data!"
+    ERROR "Requested ${nodes_used_space_mb}MiB when ${available_space_mb} is available!"
+    exit 1
+  elif (( available_space_mb - nodes_used_space_mb <= STORAGE_LIMIT_MIB )); then
+    WARNING "Downloading the data would take you below the safety threshold of ${STORAGE_LIMIT_GIB}GiB"
+    WARGING "Requested ${nodes_used_space_mb}MiB when ${available_space_mb} is available!"
+    read -rp "$( echo -e "\033[1;33mWould you still like to continue? [y/n]\033[0m " )" decision
+    case "$decision" in
+      y)
+        WARNING "Will download the data! If the head node dies, you have been warned!"
+        ;;
+      n)
+        INFO "Good! Better be safe than sorry!"
+        exit 0
+        ;;
+      *)
+        ERROR "Unrecognised option \"${decision}\"!"
+        ERROR "Your job was to choose between y or n..."
+        ERROR "Will now quit!"
+        exit 1
+        ;;
+    esac
+  fi
+
+}
+
+########
 # Validate the provided date
 # First check if the date is of the correct yyyy-mm-dd format
 # Then check if the date is earlier than the current date - warn user
@@ -215,6 +278,8 @@ function main() {
   check_candidates
 
   collect_candidates
+
+  check_disk_usage
 
 }
 
