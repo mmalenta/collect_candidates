@@ -140,6 +140,8 @@ function check_candidates_node() {
           exit 1
           ;;
       esac
+    else
+      WARNING "${full_cand_processed}"
     fi
 
   else
