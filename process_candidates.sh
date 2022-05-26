@@ -307,6 +307,8 @@ function main() {
 
   check_disk_usage
 
+  get_candidates
+
 }
 
 main "$@"
