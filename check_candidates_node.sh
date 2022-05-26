@@ -137,10 +137,12 @@ function candidates_row() {
       esac
     else
       printf "\033[1;33m %-20s\033[0m " "${full_cand_processed}"
+      printf "\n"
     fi
 
   else
     printf "\033[1m %-20s\033[0m " "${full_cand_processed}"
+    printf "\n"
   fi
 
 }
