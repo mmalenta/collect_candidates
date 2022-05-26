@@ -80,6 +80,8 @@ function check_candidates_node() {
     "
   )"
 
+  candidate_results="$( echo "${candidate_results}" | tr '\n' ' ' )"
+
   local -i spccl_candidates
   spccl_candidates="$( echo "${candidate_results}" | awk -F ' ' '{print $1}')"
   local -i known_sources
@@ -93,7 +95,7 @@ function check_candidates_node() {
   local -i plots_made
   plots_made="$( echo "${candidate_results}" | awk -F ' ' '{print $6}')"
 
-  INFO "Node ${node}:"
+  INFO "Node ${process_node}:"
   INFO "Number of candidates:"
   echo "${spccl_candidates}"
   INFO "Number of known sources:"
@@ -122,7 +124,7 @@ function check_candidates_node() {
       case "$decision" in
         y)
           WARNING "Will collect statistics for day ${date_dir}!"
-          recheck_day "${node}" "${parent_dir}" "${date_dir}"
+          recheck_day "${process_node}" "${parent_dir}" "${date_dir}"
           ;;
         n)
           WARNING "Will continue with downloading this day like nothing happened!"
