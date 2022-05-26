@@ -4,6 +4,7 @@ source ./logging.sh
 source ./constants.sh
 
 source ./check_candidates_node.sh
+source ./collect_candidates_node.sh
 
 function validate_directories() {
 
@@ -28,6 +29,25 @@ function check_candidates() {
 
   for node in "${available_nodes[@]}"; do
     check_candidates_node "${node}" "${OUTPUT_DIR}" "${collect_day}"
+  done
+
+}
+
+
+########
+# Collects the candidates on all the nodes
+#
+# Globals:
+#   available_nodes
+#   collect_day
+#
+# Arguments:
+#   None
+########
+function collect_candidates() {
+
+  for node in "${available_nodes[@]}"; do
+    collect_candidates_node "${node}" "${OUTPUT_DIR}" "${collect_day}"
   done
 
 }
@@ -193,6 +213,8 @@ function main() {
   get_nodes
 
   check_candidates
+
+  collect_candidates
 
 }
 

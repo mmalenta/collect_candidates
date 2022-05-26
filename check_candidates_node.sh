@@ -40,6 +40,7 @@ function recheck_day() {
               && find \${idir}* -name '*.tar' 2> /dev/null | wc -l \
               && echo 
           done
+          
     "
 
   read -rp "$( echo -e "\033[1;33mWould you like to download that day? [y/n]\033[0m " )" decision
