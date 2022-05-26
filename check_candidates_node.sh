@@ -68,7 +68,7 @@ function check_candidates_node() {
   local parent_dir=$2
   local date_dir=$3
 
-  candidate_results="$( ssh "${process_node}" 
+  candidate_results="$( ssh "${process_node}" \
     "
       cd ${parent_dir} \
         && tail -n +2 -q ${date_dir}*/beam*/*.spccl | wc -l \
