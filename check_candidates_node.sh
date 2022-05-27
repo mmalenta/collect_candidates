@@ -2,28 +2,7 @@
 
 source ./logging.sh
 source ./constants.sh
-
-function header() {
-
-  labels=("Node" "# candidates" "# known" "# archives" "# plots" "# tarballs" "# known + archives")
-
-  for label in "${labels[@]}"; do
-    printf "\033[1;30;47m %-20s\033[0m " "${label}"
-  done
-  printf "\n"
-
-}
-
-function recheck_header() {
-
-  labels=("UTC directory" "# candidates" "# known" "# archives" "# known + archives")
-
-  for label in "${labels[@]}"; do
-    printf "\033[1;30;47m %-20s\033[0m " "${label}"
-  done
-  printf "\n"
-
-}
+source ./table.sh
 
 ########
 # Provide a more detailed check for a given day
@@ -75,7 +54,7 @@ function recheck_day() {
 
   done
 
-  header
+  candidate_header
 
 }
 

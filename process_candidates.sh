@@ -2,6 +2,7 @@
 
 source ./logging.sh
 source ./constants.sh
+source ./table.sh
 
 source ./check_candidates_node.sh
 source ./collect_candidates_node.sh
@@ -17,22 +18,6 @@ function validate_directories() {
 }
 
 ########
-# Pretty-prints table header
-#
-# Arguments:
-#   None
-########
-function header() {
-
-  labels=("Node" "# candidates" "# known" "# archives" "# plots" "# tarballs" "# known + archives")
-
-  for label in "${labels[@]}"; do
-    printf "\033[1;30;47m %-20s\033[0m " "${label}"
-  done
-  printf "\n"
-
-}
-########
 # Checks the candidates on all the nodes
 #
 # Globals:
@@ -44,14 +29,13 @@ function header() {
 ########
 function check_candidates() {
 
-  header
+  candidate_header
 
   for node in "${available_nodes[@]}"; do
     check_candidates_node "${node}" "${OUTPUT_DIR}" "${collect_day}"
   done
 
 }
-
 
 ########
 # Collects the candidates on all the nodes
