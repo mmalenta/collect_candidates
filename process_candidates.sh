@@ -31,8 +31,11 @@ function check_candidates() {
 
   candidate_header
 
-  for node in "${available_nodes[@]}"; do
-    check_candidates_node "${node}" "${OUTPUT_DIR}" "${collect_day}"
+  for inode in {0..65}; do
+
+    node_key="tpn-0-${inode}"
+    check_candidates_node "${node_key}" "${full_nodes[${node_key}]}" "${OUTPUT_DIR}" "${collect_day}"
+
   done
 
 }
@@ -49,9 +52,15 @@ function check_candidates() {
 ########
 function collect_candidates() {
 
-  for node in "${available_nodes[@]}"; do
-    echo -ne "Collecting node ${node}\r"
-    collect_candidates_node "${node}" "${OUTPUT_DIR}" "${collect_day}"
+  for inode in {0..65}; do
+
+    node_key="tpn-0-${inode}"
+    node_status="${full_nodes[${node_key}]}"
+
+    if [[ "${node_status}" == "OK" ]]; then
+      collect_candidates_node "${node_key}" "${OUTPUT_DIR}" "${collect_day}"
+    fi
+
   done
 
   INFO "Collecting done"
@@ -77,18 +86,25 @@ function check_disk_usage() {
   local -i nodes_used_space_mb
   nodes_used_space_mb=0
 
-  for node in "${available_nodes[@]}"; do
+  for inode in {0..65}; do
 
-    node_mb="$( ssh "${node}" \
-      "
-      
-        cd ${OUTPUT_DIR}/collected_hdf5/ \
-        && du -BM ${collect_day} | sed 's/^\([0-9]*\)M.*/\1/g'
-      
-      "
-    )"
+    node_key="tpn-0-${inode}"
+    node_status="${full_nodes[${node_key}]}"
 
-    nodes_used_space_mb=$(( nodes_used_space_mb + node_mb ))
+    if [[ "${node_status}" == "OK" ]]; then
+
+      node_mb="$( ssh "${node_key}" \
+        "
+        
+          cd ${OUTPUT_DIR}/collected_hdf5/ \
+          && du -BM ${collect_day} | sed 's/^\([0-9]*\)M.*/\1/g'
+        
+        "
+      )"
+
+      nodes_used_space_mb=$(( nodes_used_space_mb + node_mb ))
+
+    fi
 
   done
 
@@ -135,9 +151,14 @@ function check_disk_usage() {
 ########
 function get_candidates() {
 
-  for node in "${available_nodes[@]}"; do
+  for inode in {0..65}; do
 
-    get_candidates_node "${node}" "${OUTPUT_DIR}" "${STORAGE_DIR}" "${collect_day}"
+    node_key="tpn-0-${inode}"
+    node_status="${full_nodes[${node_key}]}"
+
+    if [[ "${node_status}" == "OK" ]]; then
+      get_candidates_node "${node_key}" "${OUTPUT_DIR}" "${STORAGE_DIR}" "${collect_day}"
+    fi
 
   done
 
@@ -221,22 +242,20 @@ function get_nodes() {
 
     if [[ "${num_directories}" == "down" ]]; then
       ERROR "Node ${node_name} is down!"
+      full_nodes[${node_name}]="DOWN"
       continue
     fi
 
     if (( num_directories == 0 )); then
       WARNING "Node ${node_name} has no directories for ${collect_day}"
+      full_nodes[${node_name}]="NODIR"
     else
       available_nodes[${#available_nodes[@]}]="${node_name}"
+      full_nodes[${node_name}]="OK"
     fi
 
   done
   IFS=$old_ifs
-
-  INFO "Available nodes:"
-  for node in "${available_nodes[@]}"; do
-    echo "${node}"
-  done
 
 }
 
@@ -300,6 +319,7 @@ function main() {
   validate_day
 
   declare -a available_nodes
+  declare -A full_nodes
 
   get_nodes
 

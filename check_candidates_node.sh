@@ -129,23 +129,35 @@ function candidates_row() {
 function check_candidates_node() {
 
   local process_node=$1
-  local parent_dir=$2
-  local date_dir=$3
+  local node_status=$2
+  local parent_dir=$3
+  local date_dir=$4
 
-  candidate_results="$( ssh "${process_node}" \
-    "
-      cd ${parent_dir} \
-        && tail -n +2 -q ${date_dir}*/beam*/*.spccl | wc -l \
-        && cat ${date_dir}*/beam*/known_sources.dat 2> /dev/null | wc -l \
-        && find ${date_dir}* -name '*.hdf5' 2> /dev/null | wc -l \
-        && find ${date_dir}* -name '*.jpg' 2> /dev/null | wc -l \
-        && find ${date_dir}* -name '*.tar' 2> /dev/null | wc -l \
-    "
-  )"
+  if [[ "${node_status}" == "OK" ]]; then
 
+    candidate_results="$( ssh "${process_node}" \
+      "
+        cd ${parent_dir} \
+          && tail -n +2 -q ${date_dir}*/beam*/*.spccl | wc -l \
+          && cat ${date_dir}*/beam*/known_sources.dat 2> /dev/null | wc -l \
+          && find ${date_dir}* -name '*.hdf5' 2> /dev/null | wc -l \
+          && find ${date_dir}* -name '*.jpg' 2> /dev/null | wc -l \
+          && find ${date_dir}* -name '*.tar' 2> /dev/null | wc -l \
+      "
+    )"
 
-  candidate_results="$( echo "${candidate_results}" | tr '\n' ' ' )"
+    candidate_results="$( echo "${candidate_results}" | tr '\n' ' ' )"
 
-  candidates_row "${process_node}" "${candidate_results}"
+    candidates_row "${process_node}" "${candidate_results}"
+
+  elif [[ "${node_status}" == "NODIR" ]]; then
+    printf "\033[1;43m %-20s\033[0m " "${process_node}"
+    printf "\n"
+  elif [[ "${node_status}" == "DOWN" ]]; then
+    printf "\033[1;41m %-20s\033[0m " "${process_node}"
+    printf "\n"
+  else 
+    WARNING "Unrecognised ${process_node} status: ${node_status}"
+  fi
 
 }
