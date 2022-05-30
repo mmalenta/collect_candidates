@@ -64,7 +64,8 @@ function collect_candidates() {
     fi
 
   done
-
+  echo ""
+  
   INFO "Collecting done"
 
 }

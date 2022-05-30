@@ -85,12 +85,20 @@ function candidates_row() {
   local -i full_cand_processed
   full_cand_processed=$(( known_sources + archive_files ))
   local -i full_cand_diff
-  full_cand_diff=$(( spccl_candidates - full_cand_processed ))
+  full_cand_diff=$(( full_cand_processed - spccl_candidates ))
 
   if (( full_cand_diff != 0 )); then
 
+    local sign
+    sign="+"
+    if (( full_cand_diff < 0)); then
+      sign="-"
+      full_cand_diff=$(( -1 * full_cand_diff ))
+    fi
+    
     if (( $( echo "${full_cand_diff} >= ${spccl_candidates} * ${ERROR_THRESHOLD}" | bc ) )); then
-      printf "\033[1;31m %-20s\033[0m " "${full_cand_processed}"
+
+      printf "\033[1;31m %-20s \033[0m " "${full_cand_processed} (${sign}${full_cand_diff})"
       printf "\n"
       ERROR "More than $( echo "${ERROR_THRESHOLD} * 100" | bc )% of candidates processed incorrectly!"
       ERROR "Got ${full_cand_processed} instead of expected ${spccl_candidates}"
