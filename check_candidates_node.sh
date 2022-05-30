@@ -95,7 +95,7 @@ function candidates_row() {
       sign="-"
       full_cand_diff=$(( -1 * full_cand_diff ))
     fi
-    
+
     if (( $( echo "${full_cand_diff} >= ${spccl_candidates} * ${ERROR_THRESHOLD}" | bc ) )); then
 
       printf "\033[1;31m %-20s \033[0m " "${full_cand_processed} (${sign}${full_cand_diff})"
@@ -123,7 +123,7 @@ function candidates_row() {
           ;;
       esac
     else
-      printf "\033[1;33m %-20s\033[0m " "${full_cand_processed}"
+      printf "\033[1;33m %-20s\033[0m " "${full_cand_processed} (${sign}${full_cand_diff})"
       printf "\n"
     fi
 
