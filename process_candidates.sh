@@ -57,6 +57,8 @@ function collect_candidates() {
     node_key="tpn-0-${inode}"
     node_status="${full_nodes[${node_key}]}"
 
+    echo -ne "\r\033[KCollecting node ${node_key}"
+
     if [[ "${node_status}" == "OK" ]]; then
       collect_candidates_node "${node_key}" "${OUTPUT_DIR}" "${collect_day}"
     fi
