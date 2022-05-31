@@ -119,7 +119,7 @@ function check_disk_usage() {
     exit 1
   elif (( available_space_mb - nodes_used_space_mb <= STORAGE_LIMIT_MIB )); then
     WARNING "Downloading the data would take you below the safety threshold of ${STORAGE_LIMIT_GIB}GiB"
-    WARGING "Requested ${nodes_used_space_mb}MiB when ${available_space_mb} is available!"
+    WARNING "Requested ${nodes_used_space_mb}MiB when ${available_space_mb} is available!"
     read -rp "$( echo -e "\033[1;33mWould you still like to continue? [y/n]\033[0m " )" decision
     case "$decision" in
       y)
@@ -280,6 +280,7 @@ function help() {
   echo
   echo "Available options:"
   echo "-h print this message"
+  echo "-f force no candidate checking"
   echo "-d day to collect in the format yyyy-mm-dd"
   echo
   exit 0
@@ -293,15 +294,21 @@ function main() {
     exit 1
   fi
 
-  optstring=":hd:"
+  optstring=":hfd:"
+
+  force_nocheck=false
 
   while getopts "${optstring}" arg; do
     case "${arg}" in
       h) help ;;
+      f)
+        force_nocheck=true
+        WARNING "Will not check the candidate numbers"
+        ;;
       d) collect_day="${OPTARG}" ;;
       ?) 
         ERROR "Invalid option -${OPTARG}"
-        ERROR "There are a total of 2 options. How hard can it be?"
+        ERROR "There are a total of $( echo -n ${optstring//:/} | wc -m ) options. How hard can it be?"
         help
         exit 2
         ;;  
@@ -326,7 +333,9 @@ function main() {
 
   get_nodes
 
-  check_candidates
+  if [[ ! force_nocheck ]]; then
+    check_candidates
+  fi
 
   collect_candidates
 
