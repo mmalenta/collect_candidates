@@ -333,7 +333,7 @@ function main() {
 
   get_nodes
 
-  if [[ ! force_nocheck ]]; then
+  if [[ "${force_nocheck}" == false ]]; then
     check_candidates
   fi
 
