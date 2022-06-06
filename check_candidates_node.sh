@@ -46,11 +46,16 @@ function recheck_day() {
       "
     )"
 
+    declare -a results
+
     for result in ${recheck_results}; do
       printf "\033[1m %-20s\033[0m " "${result}"
+      results[${#results[@]}]=${result}
     done
 
+    printf "\033[1m %-20s\033[0m " $(( results[1] + results[2] ))
     printf "\n"
+    results=()
 
   done
 
