@@ -281,6 +281,7 @@ function help() {
   echo "Available options:"
   echo "-h print this message"
   echo "-f force no candidate checking"
+  echo "-c only check the candidate numbers - no collection or download"
   echo "-d day to collect in the format yyyy-mm-dd"
   echo
   exit 0
