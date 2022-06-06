@@ -294,9 +294,10 @@ function main() {
     exit 1
   fi
 
-  optstring=":hfd:"
+  optstring=":hfcd:"
 
   force_nocheck=false
+  check_only=false
 
   while getopts "${optstring}" arg; do
     case "${arg}" in
@@ -304,6 +305,10 @@ function main() {
       f)
         force_nocheck=true
         WARNING "Will not check the candidate numbers"
+        ;;
+      c)
+        check_only=true
+        INFO "Will check the candidate numbers only"
         ;;
       d) collect_day="${OPTARG}" ;;
       ?) 
@@ -337,11 +342,15 @@ function main() {
     check_candidates
   fi
 
-  collect_candidates
+  if [[ "${check_only}" == false ]]; then
 
-  check_disk_usage
+    collect_candidates
 
-  get_candidates
+    check_disk_usage
+
+    get_candidates
+
+  fi
 
 }
 
